@@ -1,6 +1,8 @@
 import React from "react";
 import Head from "next/head";
 import styles from "@/styles/Layout.module.css";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 
 type LayoutProps = {
   title?: string;
@@ -22,7 +24,9 @@ const Layout: React.FC<React.PropsWithChildren<LayoutProps>> = ({
         <meta name="keywords" content={keywords} />
       </Head>
 
+      <Header />
       <div className={styles.container}>{children}</div>
+      <Footer />
     </div>
   );
 };
