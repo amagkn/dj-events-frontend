@@ -9,7 +9,7 @@ type Props = {
   events: IEvent[];
 };
 
-export default function EventPage({
+export default function EventsPage({
   events,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
   return (
