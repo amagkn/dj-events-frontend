@@ -1,9 +1,10 @@
 import { Layout } from "@/components/Layout";
 import { API_URL } from "@/config";
 import { GetStaticProps, InferGetStaticPropsType } from "next";
-import { GetEventsResponse } from "@/pages/api/events";
-import { IEvent } from "@/types/event";
 import { EventItem } from "@/components/EventItem";
+import { IEvent } from "@/types/Event";
+import { GetEventsResponse } from "@/types/GetEventsResponse";
+import { urlQueryToSearchParams } from "next/dist/shared/lib/router/utils/querystring";
 
 type Props = {
   events: IEvent[];
@@ -26,9 +27,14 @@ export default function EventsPage({
 }
 
 export const getStaticProps: GetStaticProps<Props> = async () => {
-  const res = await fetch(API_URL + `/api/events`);
+  const query = urlQueryToSearchParams({
+    populate: "*",
+    sort: "date",
+  });
+
+  const res = await fetch(API_URL + `/api/events?${query}`);
 
   const events: GetEventsResponse = await res.json();
 
-  return { props: { events: events.events }, revalidate: 1 };
+  return { props: { events: events.data }, revalidate: 1 };
 };

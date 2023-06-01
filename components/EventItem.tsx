@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "@/styles/EventItem.module.css";
 import Image from "next/image";
-import { IEvent } from "@/types/event";
+import { IEvent } from "@/types/Event";
 import Link from "next/link";
 
 type EventItemProps = {
@@ -9,11 +9,16 @@ type EventItemProps = {
 };
 
 const EventItem: React.FC<EventItemProps> = ({ event }) => {
+  console.log(event);
+  const eventAttributes = event.attributes;
+  const imageAttributes =
+    event.attributes.image.data.attributes.formats.thumbnail;
+
   return (
     <div className={styles.event}>
       <div className={styles.img}>
         <Image
-          src={event.image || "/images/event-default.png"}
+          src={imageAttributes.url || "/images/event-default.png"}
           width={170}
           height={100}
           alt="Picture"
@@ -21,13 +26,14 @@ const EventItem: React.FC<EventItemProps> = ({ event }) => {
       </div>
       <div className={styles.info}>
         <span>
-          {event.date} at {event.time}
+          {new Date(eventAttributes.date).toLocaleDateString("en-US")} at{" "}
+          {event.attributes.time}
         </span>
-        <h3>{event.name}</h3>
+        <h3>{eventAttributes.name}</h3>
       </div>
 
       <div>
-        <Link className="btn" href={`/events/${event.slug}`}>
+        <Link className="btn" href={`/events/${eventAttributes.slug}`}>
           Details
         </Link>
       </div>
