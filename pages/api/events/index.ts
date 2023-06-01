@@ -1,17 +1,15 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import data from "@/pages/api/events/data.json";
+import { IEvent } from "@/types/event";
+import { IError } from "@/types/error";
 
-type Data = {
-  events: any[];
+export type GetEventsResponse = {
+  events: IEvent[];
 };
 
-type Error = {
-  message: string;
-};
-
-export default function handler(
+export default function getEvents(
   req: NextApiRequest,
-  res: NextApiResponse<Data | Error>
+  res: NextApiResponse<GetEventsResponse | IError>
 ) {
   if (req.method === "GET") {
     res.status(200).json(data);
