@@ -4,14 +4,12 @@ import {
   GetStaticProps,
   InferGetServerSidePropsType,
 } from "next";
-import { API_URL } from "@/config";
 import styles from "@/styles/Event.module.css";
 import Link from "next/link";
 import { FaPencilAlt, FaTimes } from "react-icons/fa";
 import Image from "next/image";
 import { IEvent } from "@/types/Event";
-import { GetEventsResponse } from "@/types/GetEventsResponse";
-import { urlQueryToSearchParams } from "next/dist/shared/lib/router/utils/querystring";
+import { getAllEvents } from "@/api/getAllEvents";
 
 type Props = {
   event: IEvent;
@@ -71,14 +69,7 @@ export default function EventPage({
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const query = urlQueryToSearchParams({
-    populate: "*",
-    sort: "date",
-  });
-
-  const res = await fetch(API_URL + `/api/events?${query}`);
-
-  const events: GetEventsResponse = await res.json();
+  const events = await getAllEvents({});
 
   const paths = events.data.map((e) => ({
     params: { slug: e.attributes.slug },
@@ -88,15 +79,9 @@ export const getStaticPaths: GetStaticPaths = async () => {
 };
 
 export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
-  const query = urlQueryToSearchParams({
-    populate: "*",
-    "filters[slug][$eq]": params!.slug,
-  });
-
-  const res = await fetch(API_URL + `/api/events?${query}`);
   const {
     data: [event],
-  }: GetEventsResponse = await res.json();
+  } = await getAllEvents({ filterBySlug: params!.slug as string });
 
   return { props: { event }, revalidate: 1 };
 };

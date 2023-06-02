@@ -9,7 +9,6 @@ type EventItemProps = {
 };
 
 const EventItem: React.FC<EventItemProps> = ({ event }) => {
-  console.log(event);
   const eventAttributes = event.attributes;
   const imageAttributes =
     event.attributes.image.data.attributes.formats.thumbnail;

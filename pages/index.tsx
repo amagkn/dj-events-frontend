@@ -1,11 +1,9 @@
 import { Layout } from "@/components/Layout";
-import { API_URL } from "@/config";
 import { GetStaticProps, InferGetStaticPropsType } from "next";
 import { EventItem } from "@/components/EventItem";
 import Link from "next/link";
 import { IEvent } from "@/types/Event";
-import { GetEventsResponse } from "@/types/GetEventsResponse";
-import { urlQueryToSearchParams } from "next/dist/shared/lib/router/utils/querystring";
+import { getAllEvents } from "@/api/getAllEvents";
 
 type Props = {
   events: IEvent[];
@@ -34,15 +32,7 @@ export default function HomePage({
 }
 
 export const getStaticProps: GetStaticProps<Props> = async () => {
-  const query = urlQueryToSearchParams({
-    populate: "*",
-    sort: "date",
-    "pagination[limit]": "3",
-  });
-
-  const res = await fetch(API_URL + `/api/events?${query}`);
-
-  const events: GetEventsResponse = await res.json();
+  const events = await getAllEvents({ limit: "3" });
 
   return { props: { events: events.data }, revalidate: 1 };
 };
