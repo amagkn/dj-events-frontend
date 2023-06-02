@@ -11,18 +11,21 @@ type EventItemProps = {
 const EventItem: React.FC<EventItemProps> = ({ event }) => {
   const eventAttributes = event.attributes;
   const imageAttributes =
-    event.attributes.image.data.attributes.formats.thumbnail;
+    event.attributes.image.data?.attributes.formats.thumbnail;
 
   return (
     <div className={styles.event}>
-      <div className={styles.img}>
-        <Image
-          src={imageAttributes.url || "/images/event-default.png"}
-          width={170}
-          height={100}
-          alt="Picture"
-        />
-      </div>
+      {imageAttributes && (
+        <div className={styles.img}>
+          <Image
+            src={imageAttributes.url || "/images/event-default.png"}
+            width={170}
+            height={100}
+            alt="Picture"
+          />
+        </div>
+      )}
+
       <div className={styles.info}>
         <span>
           {new Date(eventAttributes.date).toLocaleDateString("en-US")} at{" "}

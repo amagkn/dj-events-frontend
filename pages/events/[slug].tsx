@@ -42,7 +42,7 @@ export default function EventPage({
 
         <h1>{event.attributes.name}</h1>
 
-        {event.attributes.image && (
+        {event.attributes.image.data && (
           <div className={styles.image}>
             <Image
               src={event.attributes.image.data.attributes.formats.medium.url}
