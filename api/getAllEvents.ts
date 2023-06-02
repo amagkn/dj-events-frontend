@@ -6,15 +6,17 @@ type GetAllEventsResponse = {
   data: IEvent[];
 };
 
-type Params = {
+type GetAllEventsParams = {
   limit?: string;
   filterBySlug?: string;
+  searchString?: string;
 };
 
 export const getAllEvents = async ({
   limit,
   filterBySlug,
-}: Params): Promise<GetAllEventsResponse> => {
+  searchString,
+}: GetAllEventsParams): Promise<GetAllEventsResponse> => {
   const params: { [key: string]: any } = {
     populate: "*",
     sort: "date",
@@ -31,6 +33,33 @@ export const getAllEvents = async ({
       slug: {
         $eq: filterBySlug,
       },
+    };
+  }
+
+  if (searchString) {
+    params.filters = {
+      $or: [
+        {
+          name: {
+            $contains: searchString,
+          },
+        },
+        {
+          performers: {
+            $contains: searchString,
+          },
+        },
+        {
+          description: {
+            $contains: searchString,
+          },
+        },
+        {
+          venue: {
+            $contains: searchString,
+          },
+        },
+      ],
     };
   }
 
