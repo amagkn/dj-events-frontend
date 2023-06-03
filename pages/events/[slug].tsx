@@ -1,15 +1,14 @@
 import { Layout } from "@/components/Layout";
-import {
-  GetStaticPaths,
-  GetStaticProps,
-  InferGetServerSidePropsType,
-} from "next";
+import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "next";
 import styles from "@/styles/Event.module.css";
 import Link from "next/link";
 import { FaPencilAlt, FaTimes } from "react-icons/fa";
 import Image from "next/image";
 import { IEvent } from "@/types/Event";
 import { getAllEvents } from "@/api/getAllEvents";
+import { ToastContainer } from "react-toastify";
+import { deleteEvent } from "@/api/deleteEvent";
+import { useRouter } from "next/router";
 
 type Props = {
   event: IEvent;
@@ -17,9 +16,17 @@ type Props = {
 
 export default function EventPage({
   event,
-}: InferGetServerSidePropsType<typeof getStaticProps>) {
-  const deleteEvent = () => {
-    console.log("delete");
+}: InferGetStaticPropsType<typeof getStaticProps>) {
+  const router = useRouter();
+
+  const onDelete = async () => {
+    if (confirm("Are you sure?")) {
+      const res = await deleteEvent({ id: event.id });
+
+      if (res) {
+        router.push("/events");
+      }
+    }
   };
 
   return (
@@ -30,7 +37,7 @@ export default function EventPage({
             <FaPencilAlt /> Edit Events
           </Link>
 
-          <a href="#" className={styles.delete} onClick={deleteEvent}>
+          <a href="#" className={styles.delete} onClick={onDelete}>
             <FaTimes /> Delete Event
           </a>
         </div>
@@ -41,6 +48,7 @@ export default function EventPage({
         </span>
 
         <h1>{event.attributes.name}</h1>
+        <ToastContainer />
 
         {event.attributes.image.data && (
           <div className={styles.image}>

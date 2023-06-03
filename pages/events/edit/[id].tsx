@@ -4,20 +4,36 @@ import React, { ChangeEventHandler, FormEventHandler, useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { toast, ToastContainer } from "react-toastify";
-import { addEvent } from "@/api/addEvent";
+import { GetServerSideProps, InferGetServerSidePropsType } from "next";
+import { IEvent } from "@/types/Event";
+import { getEvent } from "@/api/getEvent";
 import { EventDto } from "@/dtos/EventDto";
+import { updateEvent } from "@/api/updateEvent";
+import Image from "next/image";
+import { FaImage } from "react-icons/fa";
 
-export default function AddEventPage() {
+type Props = {
+  event: IEvent;
+};
+
+export default function EditEventPage({
+  event,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const [fields, setFields] = useState<EventDto>({
-    name: "",
-    venue: "",
-    address: "",
-    performers: "",
-    date: "",
-    time: "",
-    description: "",
+    name: event.attributes.name,
+    venue: event.attributes.venue,
+    address: event.attributes.address,
+    performers: event.attributes.performers,
+    date: event.attributes.date,
+    time: event.attributes.time,
+    description: event.attributes.description,
   });
 
+  const [imgPreview, setImgPreview] = useState(
+    event.attributes.image.data
+      ? event.attributes.image.data.attributes.formats.thumbnail.url
+      : null
+  );
   const router = useRouter();
 
   const handleSubmit: FormEventHandler = async (e) => {
@@ -30,10 +46,10 @@ export default function AddEventPage() {
       return;
     }
 
-    const res = await addEvent({ fields });
-
+    const res = await updateEvent({ fields, id: event.id });
+    console.log(res);
     if (res) {
-      router.push(`/events/${res.attributes.slug}`);
+      router.push(`/events/${res.data.attributes.slug}`);
     }
   };
   const handleInputChange: ChangeEventHandler<
@@ -47,7 +63,7 @@ export default function AddEventPage() {
   return (
     <Layout title="Add New Event">
       <Link href="/events">Go Back</Link>
-      <h1>Add event</h1>
+      <h1>Edit event</h1>
       <ToastContainer />
 
       <form className={styles.form} onSubmit={handleSubmit}>
@@ -98,7 +114,7 @@ export default function AddEventPage() {
               type="date"
               name="date"
               id="date"
-              value={fields.date}
+              value={fields.date.split("T")[0]}
               onChange={handleInputChange}
             />
           </div>
@@ -124,8 +140,34 @@ export default function AddEventPage() {
           />
         </div>
 
-        <input type="submit" value="Add Event" className="btn" />
+        <input type="submit" value="Update Event" className="btn" />
       </form>
+
+      <h2>Event Image</h2>
+
+      {imgPreview ? (
+        <Image src={imgPreview} height={100} width={170} alt="Pic" />
+      ) : (
+        <div>
+          <p>No image uploaded</p>
+        </div>
+      )}
+
+      <div>
+        <button className="btn-secondary">
+          <FaImage /> Set Image
+        </button>
+      </div>
     </Layout>
   );
 }
+
+export const getServerSideProps: GetServerSideProps<Props> = async ({
+  params,
+}) => {
+  const eventId = params!.id as string;
+
+  const event = await getEvent({ id: eventId });
+
+  return { props: { event: event.data } };
+};

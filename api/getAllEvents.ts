@@ -2,10 +2,6 @@ import qs from "qs";
 import { API_URL } from "@/config";
 import { IEvent } from "@/types/Event";
 
-type GetAllEventsResponse = {
-  data: IEvent[];
-};
-
 type GetAllEventsParams = {
   limit?: string;
   filterBySlug?: string;
@@ -16,7 +12,9 @@ export const getAllEvents = async ({
   limit,
   filterBySlug,
   searchString,
-}: GetAllEventsParams): Promise<GetAllEventsResponse> => {
+}: GetAllEventsParams): Promise<{
+  data: IEvent[];
+}> => {
   const params: { [key: string]: any } = {
     populate: "*",
     sort: "date",

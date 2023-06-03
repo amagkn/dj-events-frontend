@@ -3,13 +3,14 @@ import { API_URL } from "@/config";
 import { toast } from "react-toastify";
 import { EventDto } from "@/dtos/EventDto";
 
-type AddEventParams = { fields: EventDto };
+type UpdateEventParams = { fields: EventDto; id: string };
 
-export const addEvent = async ({
+export const updateEvent = async ({
   fields,
-}: AddEventParams): Promise<IEvent | null> => {
-  const res = await fetch(API_URL + "/api/events", {
-    method: "POST",
+  id,
+}: UpdateEventParams): Promise<{ data: IEvent } | null> => {
+  const res = await fetch(API_URL + `/api/events/${id}`, {
+    method: "PUT",
     headers: {
       "Content-Type": "application/json",
     },
